@@ -1,6 +1,6 @@
 apiVersion: v2
 name: url-shortener
-description: Portable Helm chart for the url-shortener Flask app. Runs on k3d (local, $0) or EKS — only the values file changes.
+description: Portable Helm chart for the url-shortener Flask app. Runs on k3d (local, $0) or EKS — only the values file changes. small change for test.
 type: application
 version: 0.2.0
 appVersion: "dev"
