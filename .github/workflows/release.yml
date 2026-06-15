@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# chart-releaser needs to create GitHub Releases and push to gh-pages branch
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # chart-releaser needs full git history to detect changes
+
+      - uses: azure/setup-helm@v4
+
+      - name: Package and publish chart to GitHub Pages
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          charts_dir: .   # chart lives at url-shortener/ in the repo root
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
