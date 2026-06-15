@@ -22,6 +22,7 @@ jobs:
       - name: Package and publish chart to GitHub Pages
         uses: helm/chart-releaser-action@v1.6.0
         with:
-          charts_dir: .   # chart lives at url-shortener/ in the repo root
+          charts_dir: .
+          skip_existing: true   # if a release asset already exists (e.g. from a partial run), skip re-upload and just update index.yaml
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
