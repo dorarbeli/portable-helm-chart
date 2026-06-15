@@ -1,0 +1,15 @@
+﻿apiVersion: v1
+entries:
+  url-shortener:
+  - apiVersion: v2
+    appVersion: dev
+    created: "2026-06-15T12:44:52.3939891+03:00"
+    description: Portable Helm chart for the url-shortener Flask app. Runs on k3d
+      (local, $0) or EKS — only the values file changes. small change for test.
+    digest: b5925d4da682f1e08b3c99e24c9f3b056b7dddbe35ddd3539ccdc9fed8c165ae
+    name: url-shortener
+    type: application
+    urls:
+    - https://github.com/dorarbeli/portable-helm-chart/releases/download/url-shortener-0.2.0/url-shortener-0.2.0.tgz
+    version: 0.2.0
+generated: "2026-06-15T12:44:52.3929851+03:00"
