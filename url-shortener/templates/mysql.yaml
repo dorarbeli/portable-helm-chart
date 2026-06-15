@@ -1,0 +1,60 @@
+{{- if .Values.mysql.internal }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "url-shortener.fullname" . }}-mysql
+  labels:
+    {{- include "url-shortener.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app.kubernetes.io/name: {{ include "url-shortener.name" . }}-mysql
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "url-shortener.fullname" . }}-mysql
+  labels:
+    {{- include "url-shortener.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "url-shortener.fullname" . }}-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "url-shortener.name" . }}-mysql
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "url-shortener.name" . }}-mysql
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "url-shortener.fullname" . }}-db
+                  key: password
+            - name: MYSQL_DATABASE
+              value: {{ .Values.db.name }}
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.mysql.storage }}
+{{- end }}

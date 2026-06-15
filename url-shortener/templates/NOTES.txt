@@ -1,0 +1,22 @@
+url-shortener deployed as release "{{ .Release.Name }}"
+
+{{- if .Values.ingress.enabled }}
+
+App URL: http://{{ .Values.ingress.host }}
+(If running locally, make sure {{ .Values.ingress.host }} points to 127.0.0.1 in your hosts file)
+
+{{- else }}
+
+Port-forward to reach the app:
+  kubectl port-forward svc/{{ include "url-shortener.fullname" . }} 5000:80
+
+Then open: http://localhost:5000
+
+{{- end }}
+
+Smoke test:
+  curl -X POST http://localhost:5000/api/shorten -d "url=https://example.com"
+
+Upgrade:   helm upgrade {{ .Release.Name }} .
+Rollback:  helm rollback {{ .Release.Name }} 1
+Uninstall: helm uninstall {{ .Release.Name }}

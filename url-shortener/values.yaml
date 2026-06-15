@@ -1,0 +1,54 @@
+# Number of app replicas
+replicaCount: 1
+
+image:
+  repository: url-shortener
+  tag: dev
+  # Never = image was loaded via "k3d image import", not pulled from a registry
+  # Change to IfNotPresent when using ECR or any real registry
+  pullPolicy: Never
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Flask app config
+app:
+  # Base URL used when building short links, e.g. https://short.example.com
+  # Leave empty to use the request's host URL
+  publicBaseUrl: ""
+
+# Database credentials — shared by the app Secret and the in-cluster MySQL
+db:
+  host: ""        # only needed when mysql.internal is false (e.g. RDS endpoint)
+  name: shortener
+  user: root
+  password: devpass   # override in production via --set or a sealed secret
+
+# Ingress
+ingress:
+  enabled: false
+  className: ""   # traefik (k3d) | nginx (EKS with ingress-nginx)
+  annotations: {}
+  host: localhost
+  tls:
+    enabled: false
+    issuer: ""    # letsencrypt-prod | letsencrypt-staging
+
+# Resource requests/limits for the app container
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+# In-cluster MySQL (StatefulSet + Service).
+# Set internal: false and provide db.host when using an external DB (e.g. RDS).
+mysql:
+  internal: true
+  storage: 1Gi

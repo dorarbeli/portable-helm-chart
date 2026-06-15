@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Job 1: lint + render ──────────────────────────────────────────────────
+  # Runs in seconds, no cluster needed. Catches template syntax errors and
+  # schema violations before anything touches Kubernetes.
+  lint:
+    name: Helm lint & render
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: latest
+
+      - name: Lint chart
+        run: helm lint url-shortener/ -f url-shortener/values-local.yaml
+
+      - name: Render — local values
+        run: helm template ci-test url-shortener/ -f url-shortener/values-local.yaml
+
+      - name: Render — aws values
+        run: helm template ci-test url-shortener/ -f url-shortener/values-aws.yaml
+
+  # ── Job 2: validate against a real k8s API ───────────────────────────────
+  # Spins up a kind cluster (k8s-in-Docker on the runner), renders the chart,
+  # and sends every resource to the API server with --dry-run=server.
+  # The API validates resource definitions (field names, types, required fields)
+  # without actually creating anything — no Docker image needed.
+  validate:
+    name: k8s API validation (kind)
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: latest
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: ci
+
+      - name: Validate chart against k8s API
+        run: |
+          helm template ci-test url-shortener/ -f url-shortener/values-local.yaml \
+            | kubectl apply --dry-run=server -f -

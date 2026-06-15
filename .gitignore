@@ -1,0 +1,13 @@
+# Secret values files — never commit real credentials
+values-*.secret.yaml
+*.secret.yaml
+
+# Helm dependency tarballs (reproduced via helm dependency update)
+url-shortener/charts/
+
+# Rendered output files from local testing
+rendered-local.yaml
+rendered-aws.yaml
+
+# Temp Phase 1 objects (already cleaned up, but just in case)
+temp/

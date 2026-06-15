@@ -1,0 +1,28 @@
+# AWS EKS overrides — pass with: helm install short . -f values-aws.yaml
+# Reuses the url-shortener Terraform (ECR + EKS + RDS) from the existing repo.
+# Only run this when you want a live cloud proof; tear down the same day.
+
+image:
+  repository: <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/url-shortener
+  tag: latest
+  pullPolicy: IfNotPresent
+
+app:
+  publicBaseUrl: "https://short.yourdomain.com"
+
+db:
+  host: "your-rds-endpoint.rds.amazonaws.com"   # set to your RDS endpoint
+  name: shortener
+  user: admin
+  password: "changeme"   # use a real secret in production
+
+ingress:
+  enabled: true
+  className: nginx        # ingress-nginx on EKS
+  host: short.yourdomain.com
+  tls:
+    enabled: true
+    issuer: letsencrypt-prod
+
+mysql:
+  internal: false         # use RDS instead of in-cluster MySQL

@@ -1,0 +1,12 @@
+# Local k3d overrides — pass with: helm install short . -f values-local.yaml
+# Everything not listed here falls back to values.yaml defaults.
+
+ingress:
+  enabled: true
+  className: traefik   # k3d ships Traefik as its built-in ingress controller
+  host: localhost
+  tls:
+    enabled: false     # no TLS locally
+
+mysql:
+  internal: true       # spin up an in-cluster MySQL StatefulSet
