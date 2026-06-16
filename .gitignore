@@ -11,3 +11,10 @@ rendered-aws.yaml
 
 # Temp Phase 1 objects (already cleaned up, but just in case)
 temp/
+
+# Personal / internal build notes — keep local, never publish
+GUIDE.md
+PROMPT.md
+STATE.md
+CLAUDE-HANDOFF.md
+linkedin-post.md
